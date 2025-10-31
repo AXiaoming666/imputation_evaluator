@@ -23,8 +23,6 @@ class DataManager:
         self.datasets_dir: str = datasets_dir
 
         self.if_loaded: bool = False
-        self.if_missing: bool = False
-        self.if_imputed: bool = False
 
 
     def scan_datasets(self) -> List[str]:
