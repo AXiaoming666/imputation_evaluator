@@ -47,6 +47,7 @@ class DataManager:
             raise ValueError("The dataset must contain a 'date' column.")
 
         self.extract_meta_info()
+        self.z_score_normalize()
         
 
     def extract_meta_info(self) -> None:
@@ -64,10 +65,20 @@ class DataManager:
                 "end": self.loaded_data["date"].max(),
                 "frequency": pd.infer_freq(self.loaded_data["date"])
             },
-            "mean": self.loaded_data[self.loaded_data.columns[1:]].mean().to_dict(),
-            "std": self.loaded_data[self.loaded_data.columns[1:]].std().to_dict()
+            "mean": self.loaded_data[self.loaded_data.drop("date", axis=1).columns].mean().to_dict(),
+            "std": self.loaded_data[self.loaded_data.drop("date", axis=1).columns].std().to_dict()
         }
     
+    
+    def z_score_normalize(self) -> None:
+        if not self.if_loaded or self.loaded_data is None:
+            raise RuntimeError("No dataset loaded. Please load a dataset first.")
+
+        feature_cols: pd.Index = self.loaded_data.drop("date", axis=1).columns
+        for col in feature_cols:
+            mean = self.meta_info["mean"][col]
+            std = self.meta_info["std"][col]
+            self.loaded_data[col] = (self.loaded_data[col] - mean) / std
 
 
 if __name__ == "__main__":
@@ -76,5 +87,7 @@ if __name__ == "__main__":
     print("Available datasets:", datasets)
     if datasets:
         manager.load_dataset(datasets[0])
-        manager.extract_meta_info()
         print("Meta information:", manager.meta_info)
+        
+        print("First 5 rows of normalized data:")
+        print(manager.loaded_data.head())
