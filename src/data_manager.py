@@ -23,6 +23,7 @@ class DataManager:
         self.datasets_dir: str = datasets_dir
 
         self.if_loaded: bool = False
+        self.if_normalized: bool = False
 
 
     def scan_datasets(self) -> List[str]:
@@ -48,6 +49,8 @@ class DataManager:
 
         self.extract_meta_info()
         self.z_score_normalize()
+        
+        self.missing_mask = pd.DataFrame(False, index=self.loaded_data.index, columns=self.loaded_data.columns)
         
 
     def extract_meta_info(self) -> None:
@@ -80,6 +83,7 @@ class DataManager:
             std = self.meta_info["std"][col]
             self.loaded_data[col] = (self.loaded_data[col] - mean) / std
 
+        self.if_normalized = True
 
 if __name__ == "__main__":
     manager = DataManager()
