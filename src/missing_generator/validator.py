@@ -23,20 +23,15 @@ def check_missing_rate(dm: DataManager, missing_rate: float, target_column_names
             raise ValueError(f"Expected missing rate {missing_rate}, but got {actual_missing_rate} in column {col}")
 
 
-def check_missing_type(dm: DataManager, missing_type: str, target_column_names: List[str]) -> None:
+def check_missing_type(dm: DataManager, missing_type: str, target_column_names: List[str], alpha: float = 1e-5) -> None:
     feature_columns = dm.loaded_data[dm.meta_info["feature_names"]]
     target_mask = dm.missing_mask[target_column_names]
     
-    # 创建存储显著性检验结果的DataFrame
     significance_matrix = pd.DataFrame(
         index=target_column_names,
         columns=dm.meta_info["feature_names"]
     )
     
-    # 设置显著性水平
-    alpha = 1e-5
-    
-    # 对每个目标列的缺失掩码和每个特征列进行卡方检验
     for target_col in target_mask.columns:
         for feature_col in feature_columns.columns:
             x = target_mask[target_col]
