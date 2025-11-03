@@ -10,14 +10,15 @@ def generate_missing_data(
     target_column: List[str],
     missing_rate: float,
     missing_type: str,
+    gap_len: int,
     random_state: int
 ) -> None:
     if missing_type == "MCAR":
-        MCAR(dm, target_column, missing_rate, random_state)
+        MCAR(dm, target_column, missing_rate, gap_len, random_state)
     elif missing_type == "MAR":
-        MAR(dm, target_column, missing_rate, random_state)
+        MAR(dm, target_column, missing_rate, gap_len, random_state)
     elif missing_type == "MNAR":
-        MNAR(dm, target_column, missing_rate, random_state)
+        MNAR(dm, target_column, missing_rate, gap_len, random_state)
     else:
         raise ValueError(f"Unknown missing type: {missing_type}")
 
@@ -30,4 +31,5 @@ if __name__ == "__main__":
     if datasets:
         dm.load_dataset(datasets[0])
         for missing_type in ["MCAR", "MAR", "MNAR"]:
-            generate_missing_data(dm, target_column=["OT"], missing_rate=0.2, missing_type=missing_type, random_state=42)
+            for missing_rate in [0.2, 0.4, 0.6, 0.8]:
+                generate_missing_data(dm, target_column=["OT"], missing_rate=missing_rate, missing_type=missing_type, gap_len=5, random_state=42)
