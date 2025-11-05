@@ -37,19 +37,3 @@ def generate_missing_data(
         raise ValueError(f"Unknown missing type: {missing_type}")
     
     return validate(dm, missing_rate, missing_type)
-
-
-
-if __name__ == "__main__":
-    dm = DataManager()
-    datasets = dm.scan_datasets()
-    if datasets:
-        dm.load_dataset(datasets[0])
-        for missing_type in ["MCAR", "MAR", "MNAR", "LINE"]:
-            for missing_rate in [0.2, 0.4, 0.6, 0.8]:
-                print(f"Generating missing data: type={missing_type}, rate={missing_rate}")
-                generate_missing_data(dm, target_column=["OT"], missing_rate=missing_rate, missing_type=missing_type, random_state=42)
-        for missing_rate in [0.2, 0.4, 0.6, 0.8]:
-            for gap_len in [5, 10, 20]:
-                print(f"Generating missing data: type=BLOCK, rate={missing_rate}, gap_len={gap_len}")
-                generate_missing_data(dm, missing_rate=missing_rate, missing_type="BLOCK", gap_len=gap_len, random_state=42)
