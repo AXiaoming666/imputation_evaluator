@@ -133,7 +133,7 @@ def plot_missing_relationship(dm: DataManager, ax: List[Axes]) -> None:
         ax[i].set_ylim(-0.5, 1.5)
         if i == 0:
             ax[i].set_yticks([0, 1])
-            ax[i].set_yticklabels(['存在', '缺失'])
+            ax[i].set_yticklabels(['保留', '缺失'])
         else:
             ax[i].set_yticks([])
 
@@ -158,9 +158,9 @@ def plot_pointbiserialr_comparison(dm1: DataManager, dm2: DataManager, dm3: Data
             "label": "点二列相关系数"
         }
     )
-    g.set_xticklabels(dm1.meta_info["feature_names"])
+    g.set_xticklabels([feature + " (缺失特征)" if feature == "OT" else feature for feature in dm1.meta_info["feature_names"]])
     g.set_yticklabels(["MCAR", "MAR", "MNAR"], rotation=0)
-    g.set_xlabel("数值")
+    g.set_xlabel("各特征数据值")
     g.set_ylabel("缺失掩码")
     
     plt.tight_layout()
