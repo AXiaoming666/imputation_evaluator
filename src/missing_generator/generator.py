@@ -1,8 +1,8 @@
 from typing import List
 
 from src.data_manager import DataManager
-from src.missing_generator.base_missing import MCAR, MAR, MNAR
-from src.missing_generator.iot_missing import line_missing, block_missing
+from src.missing_generator.missing_type.base_missing import MCAR, MAR, MNAR
+from src.missing_generator.missing_type.iot_missing import line_missing, block_missing
 from src.missing_generator.validator import validate
 
 
