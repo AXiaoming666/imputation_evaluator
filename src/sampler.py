@@ -162,6 +162,47 @@ class sampler:
             plt.tight_layout()
             plt.show()
             
+    def plot_histograms(
+        self,
+        bins: int = 30,
+        density: bool = False,
+        figsize: Tuple[int, int] = (10, 6)
+    ) -> None:
+        import matplotlib.pyplot as plt
+        from scipy.stats import gaussian_kde
+        
+        if not self.metrics_dict:
+            raise RuntimeError("No metrics available to plot.")
+        
+        for key, values in self.metrics_dict.items():
+            arr = np.array(values)
+            if arr.size == 0:
+                continue
+            
+            plt.figure(figsize=figsize)
+            counts, bin_edges, _ = plt.hist(arr, bins=bins, density=density, alpha=0.6,
+                                            color='C0', edgecolor='black', label='样本直方图')
+            # 尝试绘制 KDE
+            try:
+                kde = gaussian_kde(arr)
+                x = np.linspace(arr.min(), arr.max(), 200)
+                if not density:
+                    bin_width = (bin_edges[1] - bin_edges[0]) if len(bin_edges) > 1 else 1.0
+                    plt.plot(x, kde(x) * arr.size * bin_width, 'r-', label='KDE')
+                else:
+                    plt.plot(x, kde(x), 'r-', label='KDE')
+            except Exception:
+                # KDE 失败时忽略
+                pass
+            
+            plt.xlabel(key)
+            plt.ylabel('频数' if not density else '密度')
+            plt.title(f'{key} 分布直方图')
+            plt.legend()
+            plt.grid(alpha=0.3)
+            plt.tight_layout()
+            plt.show()
+            
 
 if __name__ == "__main__":
     from src.data_manager import DataManager
@@ -187,4 +228,5 @@ if __name__ == "__main__":
             random_seed = sampler_instance()
         
         sampler_instance.plot_convergence()
+        sampler_instance.plot_histograms(bins=40, density=False)
         print(sampler_instance.get_metrics())
